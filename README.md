@@ -13,11 +13,11 @@ Dendron makes any website intelligent about its visitors. It tracks in-session b
 ## Quick Start
 
 ```bash
-npm install @dendron-sdk/core
+npm install dendron-sdk
 ```
 
 ```js
-import { Dendron } from '@dendron-sdk/core';
+import { Dendron } from 'dendron-sdk';
 
 Dendron.init({
   onQuery: async (payload) => {
@@ -158,7 +158,7 @@ Dendron.on('error', (err) => Sentry.captureException(err));
 ```jsx
 'use client';
 import { useEffect } from 'react';
-import { Dendron } from '@dendron-sdk/core';
+import { Dendron } from 'dendron-sdk';
 
 export default function Layout({ children }) {
   useEffect(() => {
@@ -173,7 +173,7 @@ export default function Layout({ children }) {
 ```vue
 <script setup>
 import { onMounted, onUnmounted } from 'vue'
-import { Dendron } from '@dendron-sdk/core'
+import { Dendron } from 'dendron-sdk'
 
 onMounted(() => {
   Dendron.init({ onQuery: async (p) => (await $fetch('/api/dendron', { method: 'POST', body: p })) })

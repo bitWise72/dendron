@@ -8,7 +8,7 @@ import { readFileSync } from 'fs';
 const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
 
 const banner = `/*!
- * @dendron-sdk/core v${pkg.version}
+ * dendron-sdk v${pkg.version}
  * The Zero-Liability Behavioral Intelligence SDK
  * (c) ${new Date().getFullYear()} Dendron SDK Team
  * @license MIT

@@ -1,12 +1,20 @@
 {
-  "name": "@dendron-sdk/core",
-  "version": "1.0.0",
+  "name": "dendron-sdk",
+  "version": "1.0.1",
   "type": "module",
   "description": "The Zero-Liability Behavioral Intelligence SDK — makes any website intelligent about its visitors",
-  "main": "dist/dendron.cjs.js",
+  "main": "dist/dendron.cjs.cjs",
   "module": "dist/dendron.esm.js",
   "browser": "dist/dendron.min.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/dendron.esm.js",
+      "require": "./dist/dendron.cjs.cjs",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/dendron.esm.js"
+    }
+  },
   "files": [
     "dist",
     "src"
@@ -68,7 +76,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/dendron-sdk/dendron"
+    "url": "https://github.com/bitWise72/dendron"
   },
   "sideEffects": false
 }
