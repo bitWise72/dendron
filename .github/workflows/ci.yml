@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20, 22]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Security: verify production deps are clean
+      - name: Audit production dependencies
+        run: npm audit --omit=dev
+
+      # Security: verify dependency count stays under budget
+      - name: Check dependency count
+        run: |
+          PROD_DEPS=$(node -e "const p=require('./package.json'); console.log(Object.keys(p.dependencies||{}).length + Object.keys(p.optionalDependencies||{}).length)")
+          echo "Production + optional dependencies: $PROD_DEPS"
+          if [ "$PROD_DEPS" -gt 30 ]; then
+            echo "::error::Dependency count ($PROD_DEPS) exceeds budget of 30"
+            exit 1
+          fi
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm run test
+
+      - name: Build
+        run: npm run build
+
+      # Verify bundle size stays under 55KB gzipped
+      - name: Check bundle size
+        run: |
+          GZIP_SIZE=$(gzip -c dist/dendron.min.js | wc -c)
+          GZIP_KB=$((GZIP_SIZE / 1024))
+          echo "dendron.min.js gzipped: ${GZIP_KB}KB (${GZIP_SIZE} bytes)"
+          if [ "$GZIP_SIZE" -gt 56320 ]; then
+            echo "::error::Bundle size (${GZIP_KB}KB) exceeds 55KB gzipped budget"
+            exit 1
+          fi
+
+      # Verify type declarations are generated
+      - name: Verify build artifacts
+        run: |
+          test -f dist/dendron.esm.js || (echo "::error::Missing ESM bundle" && exit 1)
+          test -f dist/dendron.cjs.js || (echo "::error::Missing CJS bundle" && exit 1)
+          test -f dist/dendron.min.js || (echo "::error::Missing UMD bundle" && exit 1)
+          test -f dist/index.d.ts     || (echo "::error::Missing type declarations" && exit 1)
+          echo "All build artifacts present"

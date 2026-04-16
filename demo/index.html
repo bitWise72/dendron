@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dendron SDK — Interactive Demo</title>
+  <meta name="description" content="The Zero-Liability Behavioral Intelligence SDK. Observe Dendron tracking your behavior in real time." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand: #6366f1;
+      --brand-dark: #4f46e5;
+      --brand-light: rgba(99,102,241,0.08);
+      --text: #111827;
+      --muted: #6b7280;
+      --bg: #ffffff;
+      --surface: #f9fafb;
+      --border: #e5e7eb;
+      --radius: 16px;
+      --font: 'Inter', -apple-system, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+    }
+
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--brand);
+      letter-spacing: -0.03em;
+      text-decoration: none;
+    }
+
+    .nav-logo span { color: var(--text); }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.15s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-cta {
+      background: var(--brand);
+      color: white !important;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 600 !important;
+      transition: background 0.15s !important;
+    }
+
+    .nav-cta:hover { background: var(--brand-dark) !important; color: white !important; }
+
+    /* ─── SECTIONS ────────────────────────────────── */
+    section {
+      padding: 80px 24px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* ─── HERO ────────────────────────────────────── */
+    #hero {
+      background: linear-gradient(135deg, #f0f0ff 0%, #fff 60%);
+      padding: 100px 24px 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #hero::before {
+      content: '';
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%);
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--brand-light);
+      color: var(--brand);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 100px;
+      border: 1px solid rgba(99,102,241,0.2);
+      margin-bottom: 24px;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+      animation: blink 2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    h1 {
+      font-size: clamp(36px, 6vw, 64px);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.04em;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+
+    h1 .accent { color: var(--brand); }
+
+    .hero-sub {
+      font-size: clamp(16px, 2vw, 20px);
+      color: var(--muted);
+      max-width: 600px;
+      margin: 0 auto 40px;
+      line-height: 1.6;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: var(--brand);
+      color: white;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 14px 28px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .btn-primary:hover { background: var(--brand-dark); transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-secondary {
+      background: white;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 15px;
+      padding: 14px 28px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: border-color 0.15s, transform 0.1s;
+    }
+
+    .btn-secondary:hover { border-color: var(--brand); color: var(--brand); transform: translateY(-1px); }
+
+    /* ─── STATS ────────────────────────────────────── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-top: 60px;
+    }
+
+    .stat-item {
+      background: white;
+      padding: 28px 24px;
+      text-align: center;
+    }
+
+    .stat-num {
+      font-size: 36px;
+      font-weight: 900;
+      color: var(--brand);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    /* ─── SECTION HEADERS ─────────────────────────── */
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--brand);
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+    }
+
+    .section-sub {
+      font-size: 18px;
+      color: var(--muted);
+      max-width: 580px;
+      line-height: 1.6;
+      margin-bottom: 48px;
+    }
+
+    /* ─── FEATURE GRID ────────────────────────────── */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .feature-card:hover {
+      border-color: var(--brand);
+      box-shadow: 0 4px 24px rgba(99,102,241,0.1);
+    }
+
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--brand-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+
+    .feature-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .feature-desc {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ─── ARCHITECTURE DIAGRAM ────────────────────── */
+    #architecture {
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+
+    #architecture h2 { color: white; }
+    #architecture .section-label { color: #818cf8; }
+    #architecture .section-sub { color: #64748b; }
+
+    .arch-pipeline {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      overflow-x: auto;
+      padding-bottom: 12px;
+      margin-bottom: 40px;
+    }
+
+    .arch-step {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 16px 20px;
+      min-width: 160px;
+      flex-shrink: 0;
+    }
+
+    .arch-step-num {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: #818cf8;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .arch-step-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #e2e8f0;
+      margin-bottom: 4px;
+    }
+
+    .arch-step-desc {
+      font-size: 11px;
+      color: #64748b;
+      line-height: 1.4;
+    }
+
+    .arch-arrow {
+      font-size: 20px;
+      color: #334155;
+      padding: 0 8px;
+      flex-shrink: 0;
+    }
+
+    .arch-modules {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .arch-module {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .arch-module-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #818cf8;
+      margin-bottom: 4px;
+      font-family: 'Fira Code', monospace;
+    }
+
+    .arch-module-runs {
+      font-size: 10px;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+
+    .arch-module-desc {
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    /* ─── INTEGRATION ─────────────────────────────── */
+    #integration { background: var(--surface); }
+
+    .code-block {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 12px;
+      padding: 24px;
+      font-family: 'Fira Code', monospace;
+      font-size: 13px;
+      line-height: 1.8;
+      overflow-x: auto;
+      border: 1px solid #1e293b;
+    }
+
+    .code-block .kw  { color: #818cf8; }
+    .code-block .fn  { color: #34d399; }
+    .code-block .str { color: #f59e0b; }
+    .code-block .cmt { color: #475569; }
+    .code-block .num { color: #fb7185; }
+    .code-block .obj { color: #38bdf8; }
+
+    .tab-bar {
+      display: flex;
+      gap: 0;
+      margin-bottom: -1px;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      border-radius: 8px 8px 0 0;
+      color: var(--muted);
+      background: var(--surface);
+      transition: all 0.15s;
+    }
+
+    .tab.active {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-color: #1e293b;
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ─── SECURITY ────────────────────────────────── */
+    .security-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .security-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .security-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .security-badge.critical { background: rgba(239,68,68,0.1); }
+    .security-badge.high { background: rgba(245,158,11,0.1); }
+    .security-badge.medium { background: rgba(99,102,241,0.1); }
+
+    .security-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .security-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .security-status {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 100px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-top: 6px;
+    }
+
+    .status-ok { background: rgba(34,197,94,0.1); color: #16a34a; }
+    .status-arch { background: rgba(99,102,241,0.1); color: var(--brand); }
+
+    /* ─── PRICING ─────────────────────────────────── */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+
+    .pricing-card {
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      position: relative;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .pricing-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+    }
+
+    .pricing-card.popular {
+      border-color: var(--brand);
+      background: linear-gradient(135deg, rgba(99,102,241,0.04) 0%, white 100%);
+    }
+
+    .popular-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--brand);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+
+    .pricing-name { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .pricing-price { font-size: 42px; font-weight: 900; letter-spacing: -0.04em; color: var(--text); line-height: 1; margin-bottom: 4px; }
+    .pricing-price span { font-size: 16px; font-weight: 400; color: var(--muted); }
+    .pricing-desc { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
+
+    .pricing-features { list-style: none; margin-bottom: 28px; display: flex; flex-direction: column; gap: 10px; }
+    .pricing-feature { font-size: 14px; display: flex; align-items: center; gap: 10px; }
+    .pricing-feature::before { content: '✓'; color: #22c55e; font-weight: 700; font-size: 14px; }
+    .pricing-feature.no::before { content: '✕'; color: #e5e7eb; }
+
+    /* ─── CTA SECTION ─────────────────────────────── */
+    #cta {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      color: white;
+      text-align: center;
+    }
+
+    #cta h2 { color: white; }
+    #cta .section-label { color: rgba(255,255,255,0.6); }
+    #cta .section-sub { color: rgba(255,255,255,0.8); margin: 0 auto 40px; }
+    #cta .btn-primary { background: white; color: var(--brand); }
+    #cta .btn-primary:hover { background: #f0f0ff; }
+    #cta .btn-secondary { border-color: rgba(255,255,255,0.3); color: white; }
+    #cta .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+
+    /* ─── FOOTER ──────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 24px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    footer a { color: var(--brand); text-decoration: none; }
+
+    /* ─── LIVE DEMO BANNER ────────────────────────── */
+    .demo-banner {
+      background: linear-gradient(90deg, rgba(99,102,241,0.08) 0%, transparent 100%);
+      border: 1px solid rgba(99,102,241,0.2);
+      border-radius: 12px;
+      padding: 16px 24px;
+      margin-bottom: 48px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .demo-pulse {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #22c55e;
+      animation: blink 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    .demo-text { font-size: 14px; color: var(--text); }
+    .demo-text strong { color: var(--brand); }
+
+    /* ─── RESPONSIVE ──────────────────────────────── */
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .arch-pipeline { gap: 4px; }
+      .arch-step { min-width: 130px; padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── NAVIGATION ───────────────────────────────────────── -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">Dendron<span>SDK</span></a>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#architecture">Architecture</a></li>
+      <li><a href="#integration">Integration</a></li>
+      <li><a href="#security">Security</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#integration" class="nav-cta">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ─── HERO ─────────────────────────────────────────────── -->
+<section id="hero" data-dendron-section="hero">
+  <div class="container">
+    <div class="hero-badge">Live Demo — Dendron is running on this page</div>
+    <h1>Make any website<br/><span class="accent">intelligent</span> about its visitors</h1>
+    <p class="hero-sub">
+      The zero-liability behavioral intelligence SDK. Tracks intent in the browser, surfaces AI-generated Smart Cards at the right moment. No server. No data storage. No API keys.
+    </p>
+    <div class="hero-buttons">
+      <a href="#integration" class="btn-primary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        Start Integrating
+      </a>
+      <a href="https://github.com/dendron-sdk/dendron" target="_blank" class="btn-secondary">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        View on GitHub
+      </a>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-num">&lt;1ms</div>
+        <div class="stat-label">Main thread budget</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">0</div>
+        <div class="stat-label">Server dependencies</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">0</div>
+        <div class="stat-label">Data stored server-side</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">6</div>
+        <div class="stat-label">Max event listeners</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">BYOK</div>
+        <div class="stat-label">Bring your own LLM key</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FEATURES ─────────────────────────────────────────── -->
+<section id="features" data-dendron-section="features">
+  <div class="container">
+    <div class="section-label">What Dendron Does</div>
+    <h2>Six modules. One pipeline. Zero server.</h2>
+    <p class="section-sub">
+      Dendron's architecture is organized into six discrete modules, each with a single responsibility and a clean interface boundary.
+    </p>
+
+    <div class="demo-banner">
+      <div class="demo-pulse"></div>
+      <div class="demo-text">
+        <strong>Dendron is tracking your behavior right now.</strong> Scroll down, read the sections, and watch a Smart Card appear in the bottom-right corner when your intent score reaches the threshold.
+      </div>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature-card" data-dendron-section="feature-tracker">
+        <div class="feature-icon">📡</div>
+        <div class="feature-title">Tracker Module</div>
+        <div class="feature-desc">
+          Captures scroll depth, section visibility, reading time, cursor position, clicks, and DOM mutations using only 6 passive event listeners. All computation runs off-main-thread in a Web Worker.
+        </div>
+      </div>
+      <div class="feature-card" data-dendron-section="feature-context">
+        <div class="feature-icon">🧠</div>
+        <div class="feature-title">Context Engine</div>
+        <div class="feature-desc">
+          Scores visitor intent 0–100 across three weighted dimensions: Engagement Depth (0.4×), Interaction Focus (0.35×), and Navigation Pattern (0.25×). Fires triggers when composite score &gt; threshold.
+        </div>
+      </div>
+      <div class="feature-card" data-dendron-section="feature-embeddings">
+        <div class="feature-icon">🔢</div>
+        <div class="feature-title">Micro-Embeddings</div>
+        <div class="feature-desc">
+          Generates compact vector representations of behavioral patterns using a quantized transformer model (&lt;25MB). Loaded lazily on first trigger. All vectors stored in IndexedDB, never transmitted.
+        </div>
+      </div>
+      <div class="feature-card" data-dendron-section="feature-prompt">
+        <div class="feature-icon">📝</div>
+        <div class="feature-title">Prompt Builder</div>
+        <div class="feature-desc">
+          Wraps behavioral context in versioned, immutable prompt templates. Works with any LLM provider: Groq, OpenAI, Anthropic. The developer provides the LLM transport via an onQuery callback.
+        </div>
+      </div>
+      <div class="feature-card" data-dendron-section="feature-renderer">
+        <div class="feature-icon">🎴</div>
+        <div class="feature-title">Card Renderer</div>
+        <div class="feature-desc">
+          Parses LLM responses and renders Smart Cards inside a closed Shadow DOM. Five card types: Greeting, Feature, Pricing, Engagement, Comparison. Zero CSS leakage to/from host page.
+        </div>
+      </div>
+      <div class="feature-card" data-dendron-section="feature-webmcp">
+        <div class="feature-icon">🤖</div>
+        <div class="feature-title">WebMCP Plugin</div>
+        <div class="feature-desc">
+          Optional. Auto-registers navigator.modelContext tools from the DOM, making the site discoverable by agentic browsers like Perplexity Comet and ChatGPT Atlas. Silently no-ops if WebMCP unavailable.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── ARCHITECTURE ─────────────────────────────────────── -->
+<section id="architecture" data-dendron-section="architecture">
+  <div class="container">
+    <div class="section-label">System Architecture</div>
+    <h2>A strict unidirectional pipeline</h2>
+    <p class="section-sub">Data flows from DOM events → Worker → Context → Prompt → Developer's backend → Rendered card. At no point does data leave the browser through Dendron's own code.</p>
+
+    <div class="arch-pipeline">
+      <div class="arch-step">
+        <div class="arch-step-num">Step 1</div>
+        <div class="arch-step-title">DOM Events</div>
+        <div class="arch-step-desc">scroll, click, hover, intersection, mutation</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-step">
+        <div class="arch-step-num">Step 2</div>
+        <div class="arch-step-title">Tracker</div>
+        <div class="arch-step-desc">Web Worker debounces &amp; computes metrics</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-step">
+        <div class="arch-step-num">Step 3</div>
+        <div class="arch-step-title">Context Engine</div>
+        <div class="arch-step-desc">Scores intent, checks thresholds</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-step">
+        <div class="arch-step-num">Step 4</div>
+        <div class="arch-step-title">Prompt Builder</div>
+        <div class="arch-step-desc">Wraps context in template → onQuery()</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-step">
+        <div class="arch-step-num">Step 5</div>
+        <div class="arch-step-title">Card Renderer</div>
+        <div class="arch-step-desc">Parses response, mounts in Shadow DOM</div>
+      </div>
+    </div>
+
+    <div class="arch-modules">
+      <div class="arch-module">
+        <div class="arch-module-name">Tracker</div>
+        <div class="arch-module-runs">Web Worker + Main Thread (listeners only)</div>
+        <div class="arch-module-desc">Zero external dependencies. Budget: &lt;1ms main thread per frame.</div>
+      </div>
+      <div class="arch-module">
+        <div class="arch-module-name">Context Engine</div>
+        <div class="arch-module-runs">Web Worker</div>
+        <div class="arch-module-desc">Rolling window state. Intent scoring. Cooldown management.</div>
+      </div>
+      <div class="arch-module">
+        <div class="arch-module-name">Micro-Embeddings</div>
+        <div class="arch-module-runs">Web Worker (Transformers.js, ≤25MB)</div>
+        <div class="arch-module-desc">Lazy-loaded. LRU IndexedDB cache. Never transmitted.</div>
+      </div>
+      <div class="arch-module">
+        <div class="arch-module-name">Prompt Builder</div>
+        <div class="arch-module-runs">Main Thread</div>
+        <div class="arch-module-desc">Versioned templates. Injection-safe. Provider-agnostic.</div>
+      </div>
+      <div class="arch-module">
+        <div class="arch-module-name">Card Renderer</div>
+        <div class="arch-module-runs">Main Thread (Shadow DOM)</div>
+        <div class="arch-module-desc">Closed Shadow Root. DOM API only. No innerHTML on user data.</div>
+      </div>
+      <div class="arch-module">
+        <div class="arch-module-name">WebMCP Plugin</div>
+        <div class="arch-module-runs">Main Thread (optional)</div>
+        <div class="arch-module-desc">navigator.modelContext. DOM analysis. Silent no-op if unavailable.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── INTEGRATION ──────────────────────────────────────── -->
+<section id="integration" data-dendron-section="integration">
+  <div class="container">
+    <div class="section-label">Developer Experience</div>
+    <h2>One callback. Infinite intelligence.</h2>
+    <p class="section-sub">
+      Install via NPM or CDN. The only required parameter is <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:13px;">onQuery</code> — your backend's LLM transport function.
+    </p>
+
+    <div class="tab-bar">
+      <button class="tab active" onclick="showTab('minimal')">Minimal</button>
+      <button class="tab" onclick="showTab('full')">Full Config</button>
+      <button class="tab" onclick="showTab('react')">React / Next.js</button>
+      <button class="tab" onclick="showTab('vue')">Vue / Nuxt</button>
+    </div>
+
+    <div id="tab-minimal" class="tab-panel active">
+      <div class="code-block">
+<span class="cmt">// Install: npm install @dendron-sdk/core</span>
+<span class="kw">import</span> { Dendron } <span class="kw">from</span> <span class="str">'@dendron-sdk/core'</span>;
+
+Dendron.<span class="fn">init</span>({
+  <span class="cmt">// REQUIRED: Route to your backend — Dendron never sees your API key</span>
+  <span class="fn">onQuery</span>: <span class="kw">async</span> (payload) => {
+    <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'/api/ai-proxy'</span>, {
+      method: <span class="str">'POST'</span>,
+      headers: { <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span> },
+      body: <span class="obj">JSON</span>.<span class="fn">stringify</span>(payload)
+    });
+    <span class="kw">return</span> res.<span class="fn">json</span>(); <span class="cmt">// Must return a SmartCard JSON object</span>
+  }
+});
+      </div>
+    </div>
+
+    <div id="tab-full" class="tab-panel">
+      <div class="code-block">
+Dendron.<span class="fn">init</span>({
+  <span class="fn">onQuery</span>: <span class="kw">async</span> (payload) => { <span class="cmt">/* your backend */</span> },
+
+  tracking: {
+    scrollDebounce: <span class="num">200</span>,        <span class="cmt">// ms</span>
+    cursorDebounce: <span class="num">300</span>,        <span class="cmt">// ms</span>
+    readingInterval: <span class="num">1000</span>,      <span class="cmt">// ms</span>
+    mutationFlushInterval: <span class="num">500</span>, <span class="cmt">// ms</span>
+  },
+  intent: {
+    triggerThreshold: <span class="num">55</span>,      <span class="cmt">// 0-100, when to fire Smart Card</span>
+    cooldownSeconds: <span class="num">30</span>,        <span class="cmt">// seconds between triggers</span>
+    maxCardsPerSession: <span class="num">5</span>,      <span class="cmt">// prevent fatigue</span>
+  },
+  storage: {
+    maxStorageMB: <span class="num">25</span>,           <span class="cmt">// IndexedDB cap</span>
+    embeddingTTLDays: <span class="num">7</span>,        <span class="cmt">// embedding entry lifetime</span>
+    cleanupIntervalMinutes: <span class="num">5</span>,  <span class="cmt">// eviction sweep interval</span>
+  },
+  ui: {
+    position: <span class="str">'bottom-right'</span>,  <span class="cmt">// or 'bottom-left'</span>
+    theme: <span class="str">'auto'</span>,             <span class="cmt">// 'light' | 'dark' | 'auto'</span>
+    branding: <span class="kw">true</span>,             <span class="cmt">// 'Powered by Dendron' footer</span>
+    zIndex: <span class="num">999999</span>,             <span class="cmt">// widget z-index</span>
+  },
+  systemContext: <span class="str">'Acme is a developer platform for edge deployments...'</span>,
+  webMCP: <span class="kw">false</span>,               <span class="cmt">// enable agent-readiness layer</span>
+  debug: <span class="kw">false</span>,                <span class="cmt">// shows devtools overlay</span>
+});
+
+<span class="cmt">// Subscribe to events</span>
+Dendron.<span class="fn">on</span>(<span class="str">'trigger'</span>, (payload) => {
+  analytics.<span class="fn">track</span>(<span class="str">'dendron_trigger'</span>, { score: payload.trigger.score });
+});
+
+Dendron.<span class="fn">on</span>(<span class="str">'card:action'</span>, (action) => {
+  router.<span class="fn">push</span>(action.href);
+});
+      </div>
+    </div>
+
+    <div id="tab-react" class="tab-panel">
+      <div class="code-block">
+<span class="cmt">// app/layout.tsx (Next.js App Router)</span>
+<span class="str">'use client'</span>;
+<span class="kw">import</span> { useEffect } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { Dendron } <span class="kw">from</span> <span class="str">'@dendron-sdk/core'</span>;
+
+<span class="kw">export default function</span> <span class="fn">RootLayout</span>({ children }) {
+  <span class="fn">useEffect</span>(() => {
+    <span class="cmt">// Only runs on client — SSR safe</span>
+    Dendron.<span class="fn">init</span>({
+      <span class="fn">onQuery</span>: <span class="kw">async</span> (payload) => {
+        <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'/api/dendron'</span>, {
+          method: <span class="str">'POST'</span>,
+          body: <span class="obj">JSON</span>.<span class="fn">stringify</span>(payload),
+        });
+        <span class="kw">return</span> res.<span class="fn">json</span>();
+      },
+      systemContext: process.env.<span class="obj">NEXT_PUBLIC_DENDRON_CONTEXT</span>,
+    });
+    <span class="kw">return</span> () => Dendron.<span class="fn">destroy</span>();
+  }, []);
+
+  <span class="kw">return</span> &lt;&gt;{children}&lt;/&gt;;
+}
+      </div>
+    </div>
+
+    <div id="tab-vue" class="tab-panel">
+      <div class="code-block">
+<span class="cmt">// App.vue</span>
+&lt;<span class="kw">script</span> setup&gt;
+<span class="kw">import</span> { onMounted, onUnmounted } <span class="kw">from</span> <span class="str">'vue'</span>
+<span class="kw">import</span> { Dendron } <span class="kw">from</span> <span class="str">'@dendron-sdk/core'</span>
+
+<span class="fn">onMounted</span>(() => {
+  Dendron.<span class="fn">init</span>({
+    <span class="fn">onQuery</span>: <span class="kw">async</span> (payload) => {
+      <span class="kw">const</span> { data } = <span class="kw">await</span> $<span class="fn">fetch</span>(<span class="str">'/api/dendron'</span>, {
+        method: <span class="str">'POST'</span>,
+        body: payload,
+      })
+      <span class="kw">return</span> data
+    }
+  })
+})
+
+<span class="fn">onUnmounted</span>(() => Dendron.<span class="fn">destroy</span>())
+&lt;/<span class="kw">script</span>&gt;
+      </div>
+    </div>
+
+    <!-- Backend Example -->
+    <div style="margin-top: 32px;">
+      <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px;">Your Backend Proxy (TypeScript)</h3>
+      <div class="code-block">
+<span class="cmt">// pages/api/dendron.ts (Next.js) or equivalent</span>
+<span class="kw">import type</span> { NextApiRequest, NextApiResponse } <span class="kw">from</span> <span class="str">'next'</span>
+<span class="kw">import</span> OpenAI <span class="kw">from</span> <span class="str">'openai'</span>
+
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="fn">OpenAI</span>({ apiKey: process.env.<span class="obj">OPENAI_API_KEY</span> })
+
+<span class="kw">export default async function</span> <span class="fn">handler</span>(req: NextApiRequest, res: NextApiResponse) {
+  <span class="kw">if</span> (req.method !== <span class="str">'POST'</span>) <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">405</span>).<span class="fn">end</span>()
+
+  <span class="kw">const</span> payload = req.body <span class="cmt">// DendronContextPayload</span>
+
+  <span class="kw">const</span> completion = <span class="kw">await</span> client.chat.completions.<span class="fn">create</span>({
+    model: <span class="str">'gpt-4o-mini'</span>,
+    messages: [{ role: <span class="str">'user'</span>, content: payload.prompt }],
+    response_format: { type: <span class="str">'json_object'</span> },
+    max_tokens: <span class="num">400</span>,
+  })
+
+  <span class="kw">const</span> card = <span class="obj">JSON</span>.<span class="fn">parse</span>(completion.choices[<span class="num">0</span>].message.content ?? <span class="str">'{}'</span>)
+  res.<span class="fn">json</span>(card) <span class="cmt">// Returns SmartCard JSON to Dendron</span>
+}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SECURITY ─────────────────────────────────────────── -->
+<section id="security" data-dendron-section="security">
+  <div class="container">
+    <div class="section-label">Security Model</div>
+    <h2>Security is the architecture</h2>
+    <p class="section-sub">Every design decision prioritizes security. Dendron's threat model and mitigations are documented and public.</p>
+
+    <div class="security-grid">
+      <div class="security-item">
+        <div class="security-badge critical">🔐</div>
+        <div>
+          <div class="security-title">API Key Exposure</div>
+          <div class="security-desc">BYOK callback pattern: Dendron never sees, holds, or transmits any API key. Your backend manages all key operations.</div>
+          <div class="security-status status-arch">Eliminated by Architecture</div>
+        </div>
+      </div>
+      <div class="security-item">
+        <div class="security-badge critical">⛓️</div>
+        <div>
+          <div class="security-title">Supply Chain Attack</div>
+          <div class="security-desc">SHA-512 integrity hashes on all dependencies. &lt;30 total production packages. CI fails on lockfile modification.</div>
+          <div class="security-status status-ok">Implemented in CI</div>
+        </div>
+      </div>
+      <div class="security-item">
+        <div class="security-badge high">💉</div>
+        <div>
+          <div class="security-title">XSS via Smart Card Content</div>
+          <div class="security-desc">All LLM response content is sanitized before rendering. Zero innerHTML on user/LLM data. DOM API (createElement/textContent) only.</div>
+          <div class="security-status status-ok">Enforced in Card Renderer</div>
+        </div>
+      </div>
+      <div class="security-item">
+        <div class="security-badge high">🛡️</div>
+        <div>
+          <div class="security-title">Host Page CSS Interference</div>
+          <div class="security-desc">Closed Shadow DOM encapsulation. No global styles. All Dendron CSS is scoped and inlined — invisible to the host page.</div>
+          <div class="security-status status-arch">Enforced by Design</div>
+        </div>
+      </div>
+      <div class="security-item">
+        <div class="security-badge medium">💾</div>
+        <div>
+          <div class="security-title">IndexedDB Data Exfiltration</div>
+          <div class="security-desc">Same-origin policy (browser-enforced). Data is behavioral vectors, not PII. 7-day TTL with LRU eviction.</div>
+          <div class="security-status status-ok">Browser-Enforced + SDK Policy</div>
+        </div>
+      </div>
+      <div class="security-item">
+        <div class="security-badge medium">⚡</div>
+        <div>
+          <div class="security-title">Main Thread Blocking</div>
+          <div class="security-desc">All computation in Web Worker. Main thread listeners do zero processing. &lt;1ms budget enforced in CI.</div>
+          <div class="security-status status-arch">Architecture + CI Enforced</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PRICING ───────────────────────────────────────────── -->
+<section id="pricing" data-dendron-section="pricing">
+  <div class="container">
+    <div class="section-label">Pricing</div>
+    <h2>Start free. Scale as you grow.</h2>
+    <p class="section-sub">No per-seat pricing. No hidden fees. The SDK is MIT licensed — you only pay for the dashboard and enterprise features.</p>
+
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="pricing-name">Free</div>
+        <div class="pricing-price">$0</div>
+        <div class="pricing-desc">For developers building and experimenting</div>
+        <ul class="pricing-features">
+          <li class="pricing-feature">Full SDK access (MIT)</li>
+          <li class="pricing-feature">All 5 Smart Card types</li>
+          <li class="pricing-feature">Community support</li>
+          <li class="pricing-feature">"Powered by Dendron" branding</li>
+          <li class="pricing-feature no">Analytics dashboard</li>
+          <li class="pricing-feature no">Custom branding</li>
+          <li class="pricing-feature no">WebMCP plugin</li>
+        </ul>
+        <a href="#integration" class="btn-secondary" style="width:100%;justify-content:center;">Get Started Free</a>
+      </div>
+
+      <div class="pricing-card popular">
+        <div class="popular-badge">Most Popular</div>
+        <div class="pricing-name">Pro</div>
+        <div class="pricing-price">$29<span>/mo</span></div>
+        <div class="pricing-desc">For production sites and growing teams</div>
+        <ul class="pricing-features">
+          <li class="pricing-feature">Everything in Free</li>
+          <li class="pricing-feature">Remove Dendron branding</li>
+          <li class="pricing-feature">Analytics dashboard</li>
+          <li class="pricing-feature">WebMCP agent plugin</li>
+          <li class="pricing-feature">Priority support</li>
+          <li class="pricing-feature">A/B testing for cards</li>
+          <li class="pricing-feature no">Custom SLA</li>
+        </ul>
+        <a href="#integration" class="btn-primary" style="width:100%;justify-content:center;text-decoration:none;">Start Free Trial</a>
+      </div>
+
+      <div class="pricing-card">
+        <div class="pricing-name">Enterprise</div>
+        <div class="pricing-price" style="font-size:32px;">Custom</div>
+        <div class="pricing-desc">For high-traffic sites and compliance needs</div>
+        <ul class="pricing-features">
+          <li class="pricing-feature">Everything in Pro</li>
+          <li class="pricing-feature">SOC 2 (in progress)</li>
+          <li class="pricing-feature">Custom SLA</li>
+          <li class="pricing-feature">DPA & Security Whitepaper</li>
+          <li class="pricing-feature">Dedicated support</li>
+          <li class="pricing-feature">Self-hosted option</li>
+          <li class="pricing-feature">Custom integrations</li>
+        </ul>
+        <a href="mailto:enterprise@dendron.dev" class="btn-secondary" style="width:100%;justify-content:center;text-decoration:none;">Contact Sales</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA ───────────────────────────────────────────────── -->
+<section id="cta" data-dendron-section="cta">
+  <div class="container">
+    <div class="section-label">Get Started Today</div>
+    <h2>Your website is already smart.<br/>Now let it show it.</h2>
+    <p class="section-sub">
+      Add Dendron in under 5 minutes. No account required for the free tier. MIT licensed.
+    </p>
+    <div class="hero-buttons">
+      <a href="#integration" class="btn-primary">Start Building</a>
+      <a href="https://docs.dendron.dev" target="_blank" class="btn-secondary">Read the Docs</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ────────────────────────────────────────────── -->
+<footer>
+  <p>
+    &copy; 2026 Dendron SDK · <a href="#">Privacy Policy</a> · <a href="#">Terms of Service</a> · <a href="https://github.com/dendron-sdk/dendron">GitHub</a>
+    <br/>
+    <span style="font-size: 12px; opacity: 0.6; margin-top: 8px; display: block;">
+      This page is running a live Dendron demo with a mock LLM backend. Scroll, read, and interact to see Smart Cards appear.
+    </span>
+  </p>
+</footer>
+
+<!-- ─── SCRIPTS ──────────────────────────────────────────── -->
+<script>
+// ─── Tab Switcher ──────────────────────────────────────────
+function showTab(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-' + id).classList.add('active');
+}
+
+// ─── Live Dendron Integration (Self-Contained Demo) ────────
+// This demo runs Dendron inline with a mock onQuery backend.
+// In production, onQuery routes to YOUR backend.
+</script>
+
+<script type="module">
+// ─── MOCK SMART CARD RESPONSES ────────────────────────────
+// In production, these come from YOUR LLM backend.
+// This mock returns cards based on the visitor's focus section.
+
+function getMockSmartCard(payload) {
+  const focus = payload.visitor?.focusSection || payload.trigger?.sectionId || '';
+  const score = payload.visitor?.intentScore || 0;
+
+  if (focus.includes('pricing') || focus === 'cta') {
+    return {
+      type: 'pricing',
+      headline: 'You\'ve been comparing our plans 👀',
+      plans: [
+        {
+          name: 'Free',
+          price: '$0',
+          period: 'forever',
+          highlight: false,
+          features: ['Full SDK access', 'All card types', 'Community support']
+        },
+        {
+          name: 'Pro',
+          price: '$29',
+          period: 'mo',
+          highlight: true,
+          features: ['No branding', 'Analytics', 'WebMCP plugin']
+        }
+      ],
+      actions: [
+        { label: 'Start Free Trial', href: '#', variant: 'primary' },
+        { label: 'See all plans', href: '#pricing', variant: 'secondary' }
+      ]
+    };
+  }
+
+  if (focus.includes('feature') || focus.includes('tracker') || focus.includes('context')) {
+    return {
+      type: 'feature',
+      headline: 'You\'re exploring our Tracker module',
+      feature: 'Web Worker Architecture',
+      description: 'Dendron\'s Tracker runs entirely in a Web Worker — zero main thread impact. Your page stays fast while we capture behavioral signals.',
+      stats: [
+        { label: 'CPU Budget', value: '<1ms' },
+        { label: 'Listeners', value: '6 max' },
+        { label: 'postMessage', value: '≤10/s' }
+      ],
+      actions: [
+        { label: 'See the code', href: 'https://github.com/dendron-sdk/dendron', variant: 'primary' },
+        { label: 'Read architecture docs', href: '#architecture', variant: 'secondary' }
+      ]
+    };
+  }
+
+  if (focus.includes('security')) {
+    return {
+      type: 'comparison',
+      headline: 'How Dendron compares on data safety',
+      items: [
+        {
+          name: 'Dendron',
+          attributes: {
+            'Data stored': 'Browser only',
+            'API keys': 'Never sees them',
+            'GDPR': 'Not a processor',
+            'Server': 'Zero required'
+          }
+        },
+        {
+          name: 'Traditional Analytics',
+          attributes: {
+            'Data stored': 'Central server',
+            'API keys': 'Managed by vendor',
+            'GDPR': 'Data processor',
+            'Server': 'Required'
+          }
+        }
+      ],
+      actions: [
+        { label: 'Security whitepaper', href: '#security', variant: 'primary' },
+        { label: 'Contact us', href: 'mailto:security@dendron.dev', variant: 'secondary' }
+      ]
+    };
+  }
+
+  if (focus.includes('architecture')) {
+    return {
+      type: 'engagement',
+      headline: 'You\'re deep in the architecture docs',
+      body: 'Most developers at this point want to see a real integration. Want me to walk you through the 5-minute quickstart?',
+      socialProof: '"We integrated Dendron in under 10 minutes and saw 3× improvement in demo-to-trial conversions." — Early access developer',
+      stats: [
+        { label: 'Integration time', value: '5 min' },
+        { label: 'Bundle size', value: '<50KB' }
+      ],
+      actions: [
+        { label: 'View quickstart', href: '#integration', variant: 'primary' },
+        { label: 'Book a call', href: 'mailto:hello@dendron.dev', variant: 'secondary' }
+      ]
+    };
+  }
+
+  // Default: greeting
+  return {
+    type: 'greeting',
+    headline: score > 40 ? 'You seem genuinely interested 👋' : 'Welcome to Dendron',
+    body: score > 40
+      ? 'Based on how you\'re browsing, you\'re evaluating Dendron for your site. I can show you exactly how the integration works — takes 5 minutes.'
+      : 'I\'m Dendron. I track how you engage with this page and surface helpful Smart Cards at the right moment. Right now I\'m watching your scroll depth and reading time.',
+    actions: [
+      { label: score > 40 ? 'See integration' : 'How does this work?', href: '#integration', variant: 'primary' },
+      { label: 'No thanks', action: 'dismiss', variant: 'ghost' }
+    ]
+  };
+}
+
+// ─── Initialize Dendron ────────────────────────────────────
+// Dynamically import the SDK (built version or source)
+// For this demo, we inline a simplified version that works
+// without a build step.
+
+// Check if the built SDK is available
+let DendronSDK = null;
+
+try {
+  // Try to use the built SDK
+  const mod = await import('../dist/dendron.esm.js');
+  DendronSDK = mod.Dendron || mod.default;
+} catch (e) {
+  // Build not available — use the inline implementation below
+  console.info('[Dendron Demo] Using inline demo implementation (run npm run build for full SDK)');
+}
+
+if (DendronSDK) {
+  DendronSDK.init({
+    onQuery: async (payload) => {
+      // Simulate network delay
+      await new Promise(r => setTimeout(r, 800 + Math.random() * 400));
+      return getMockSmartCard(payload);
+    },
+    intent: {
+      triggerThreshold: 30, // Lower threshold for demo purposes
+      cooldownSeconds: 20,
+      maxCardsPerSession: 8,
+    },
+    ui: {
+      position: 'bottom-right',
+      theme: 'auto',
+      branding: true,
+    },
+    systemContext: 'Dendron is a behavioral intelligence SDK for websites. This is the product demo page.',
+    debug: true, // Show devtools overlay in demo
+  });
+
+  DendronSDK.on('card:rendered', (card) => {
+    console.log('[Demo] Smart Card rendered:', card.type);
+  });
+
+  DendronSDK.on('trigger', (payload) => {
+    console.log('[Demo] Intent triggered — Score:', payload.trigger.score, 'Focus:', payload.visitor.focusSection);
+  });
+} else {
+  // ─── Fallback: Inline Behavioral Demo ─────────────────────
+  // A simplified demo that works without the built SDK.
+  // Shows the core UX behavior.
+
+  (function() {
+    'use strict';
+
+    const TRIGGER_THRESHOLD = 35;
+    const COOLDOWN_MS = 20000;
+    const MAX_CARDS = 8;
+
+    let state = {
+      scrollDepth: 0,
+      readingTime: {},
+      intentScore: 0,
+      focusSection: '',
+      lastTrigger: 0,
+      cardCount: 0,
+      shown: false,
+    };
+
+    // Shadow DOM Widget
+    const host = document.createElement('dendron-demo');
+    const shadow = host.attachShadow({ mode: 'closed' });
+
+    const style = document.createElement('style');
+    style.textContent = getWidgetStyles();
+    shadow.appendChild(style);
+
+    const fab = createFAB();
+    const panel = createPanel();
+    shadow.appendChild(fab);
+    shadow.appendChild(panel);
+    document.body.appendChild(host);
+
+    setTimeout(() => fab.classList.add('visible'), 5000);
+
+    // Scroll tracking
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(() => {
+          const pct = Math.min(100, Math.round(((window.scrollY + window.innerHeight) / document.documentElement.scrollHeight) * 100));
+          state.scrollDepth = Math.max(state.scrollDepth, pct);
+          updateScore();
+          ticking = false;
+        });
+      }
+    }, { passive: true });
+
+    // Section reading time
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        const id = e.target.dataset.dendronSection || e.target.id;
+        if (id && e.intersectionRatio > 0.5) state.focusSection = id;
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('[data-dendron-section]').forEach(el => io.observe(el));
+
+    setInterval(() => {
+      if (state.focusSection) {
+        state.readingTime[state.focusSection] = (state.readingTime[state.focusSection] || 0) + 1;
+        updateScore();
+      }
+    }, 1000);
+
+    function updateScore() {
+      const totalRead = Object.values(state.readingTime).reduce((a, b) => a + b, 0);
+      const readScore = Math.min(100, (totalRead / 10) * 60);
+      const scrollScore = state.scrollDepth * 0.4;
+      state.intentScore = Math.round(readScore * 0.6 + scrollScore * 0.4);
+      checkTrigger();
+    }
+
+    function checkTrigger() {
+      if (state.cardCount >= MAX_CARDS) return;
+      if (Date.now() - state.lastTrigger < COOLDOWN_MS) return;
+      if (state.intentScore < TRIGGER_THRESHOLD) return;
+
+      state.lastTrigger = Date.now();
+      state.cardCount++;
+
+      const payload = {
+        visitor: { intentScore: state.intentScore, focusSection: state.focusSection, scrollDepth: state.scrollDepth },
+        trigger: { reason: 'threshold', sectionId: state.focusSection, score: state.intentScore }
+      };
+
+      showLoading();
+      if (!state.shown) {
+        state.shown = true;
+        openPanel();
+      }
+
+      setTimeout(() => {
+        removeLoading();
+        const card = getMockSmartCard(payload);
+        renderCard(card);
+      }, 1000 + Math.random() * 500);
+    }
+
+    function createFAB() {
+      const btn = document.createElement('button');
+      btn.className = 'fab bottom-right';
+      btn.setAttribute('aria-label', 'Open assistant');
+      btn.innerHTML = `<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`;
+      btn.addEventListener('click', togglePanel);
+      return btn;
+    }
+
+    function createPanel() {
+      const p = document.createElement('div');
+      p.className = 'panel bottom-right';
+      p.innerHTML = `
+        <div class="header">
+          <div class="hicon">⚡</div>
+          <div><div class="htitle">Smart Assistant</div><div class="hsub">Personalized to your interest</div></div>
+        </div>
+        <div class="cards" id="dcards"></div>
+        <div class="footer-brand">Powered by <a href="https://dendron.dev" target="_blank">Dendron</a></div>
+      `;
+      return p;
+    }
+
+    let isOpen = false;
+    function togglePanel() {
+      isOpen = !isOpen;
+      panel.classList.toggle('open', isOpen);
+      fab.classList.toggle('open', isOpen);
+      if (isOpen && !state.shown) {
+        state.shown = true;
+        showLoading();
+        setTimeout(() => {
+          removeLoading();
+          renderCard(getMockSmartCard({ visitor: { intentScore: 5, focusSection: 'hero', scrollDepth: state.scrollDepth }, trigger: { reason: 'user_action', sectionId: 'hero', score: 5 } }));
+        }, 800);
+      }
+    }
+
+    function openPanel() {
+      if (!isOpen) togglePanel();
+    }
+
+    function showLoading() {
+      const cards = shadow.getElementById('dcards');
+      if (!cards) return;
+      const l = document.createElement('div');
+      l.className = 'loading';
+      l.dataset.loading = '1';
+      l.innerHTML = `<span>Thinking</span><div class="dots"><span></span><span></span><span></span></div>`;
+      cards.appendChild(l);
+      cards.scrollTop = cards.scrollHeight;
+      openPanel();
+    }
+
+    function removeLoading() {
+      shadow.querySelectorAll('[data-loading]').forEach(e => e.remove());
+    }
+
+    function renderCard(card) {
+      const cards = shadow.getElementById('dcards');
+      if (!cards) return;
+
+      const el = document.createElement('div');
+      el.className = 'card';
+
+      const badge = document.createElement('span');
+      badge.className = 'badge';
+      badge.textContent = card.type.charAt(0).toUpperCase() + card.type.slice(1);
+
+      const h3 = document.createElement('h3');
+      h3.textContent = card.headline;
+      el.appendChild(badge);
+      el.appendChild(h3);
+
+      if (card.body) {
+        const p = document.createElement('p');
+        p.textContent = card.body;
+        el.appendChild(p);
+      }
+
+      if (card.description) {
+        const p = document.createElement('p');
+        p.textContent = card.description;
+        el.appendChild(p);
+      }
+
+      if (card.socialProof) {
+        const proof = document.createElement('p');
+        proof.style.cssText = 'font-style:italic;opacity:0.8;font-size:12px;margin-bottom:10px;padding:8px;background:rgba(99,102,241,0.06);border-left:3px solid #6366f1;border-radius:4px;';
+        proof.textContent = card.socialProof;
+        el.appendChild(proof);
+      }
+
+      if (card.stats) {
+        const statsRow = document.createElement('div');
+        statsRow.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fit,minmax(60px,1fr));gap:8px;margin-bottom:12px;';
+        card.stats.forEach(s => {
+          const stat = document.createElement('div');
+          stat.style.cssText = 'background:white;border:1px solid #e5e7eb;border-radius:6px;padding:8px;text-align:center;';
+          stat.innerHTML = `<div style="font-size:16px;font-weight:800;color:#6366f1">${s.value}</div><div style="font-size:10px;color:#6b7280;text-transform:uppercase">${s.label}</div>`;
+          statsRow.appendChild(stat);
+        });
+        el.appendChild(statsRow);
+      }
+
+      if (card.actions && card.actions.length) {
+        const actRow = document.createElement('div');
+        actRow.className = 'actions';
+        card.actions.forEach((act, i) => {
+          const btn = document.createElement('button');
+          btn.className = i === 0 ? 'btn-p' : 'btn-s';
+          btn.textContent = act.label;
+          if (act.href) btn.addEventListener('click', () => window.open(act.href, '_blank'));
+          actRow.appendChild(btn);
+        });
+        el.appendChild(actRow);
+      }
+
+      cards.appendChild(el);
+      cards.scrollTop = cards.scrollHeight;
+    }
+
+    function getWidgetStyles() {
+      return `
+        .fab {
+          position: fixed;
+          width: 52px; height: 52px;
+          border-radius: 50%;
+          background: #6366f1;
+          color: white;
+          border: none;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 16px rgba(99,102,241,0.4);
+          z-index: 999999;
+          transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+          opacity: 0;
+          transform: scale(0.8);
+        }
+        .fab.visible { opacity: 1; transform: scale(1); animation: pulse 3s ease-in-out 1s 3; }
+        .fab:hover { transform: scale(1.08); box-shadow: 0 6px 24px rgba(99,102,241,0.5); }
+        .fab.bottom-right { bottom: 24px; right: 24px; }
+        @keyframes pulse { 0%,100%{box-shadow:0 4px 16px rgba(99,102,241,0.4)} 50%{box-shadow:0 4px 28px rgba(99,102,241,0.8)} }
+
+        .panel {
+          position: fixed;
+          width: 320px;
+          max-height: 60vh;
+          background: white;
+          border-radius: 16px;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+          border: 1px solid #e5e7eb;
+          z-index: 999998;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+          opacity: 0;
+          transform: translateY(16px) scale(0.97);
+          pointer-events: none;
+          transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          font-size: 14px;
+          color: #111827;
+        }
+        .panel.open { opacity: 1; transform: none; pointer-events: all; }
+        .panel.bottom-right { bottom: 88px; right: 24px; }
+
+        .header { display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid #f3f4f6;background:#fafafa; }
+        .hicon { width:32px;height:32px;border-radius:50%;background:#6366f1;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0; }
+        .htitle { font-weight:700;font-size:13px; }
+        .hsub { font-size:11px;color:#9ca3af; }
+
+        .cards { flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px; }
+        .cards::-webkit-scrollbar { width:4px; }
+        .cards::-webkit-scrollbar-thumb { background:#e5e7eb;border-radius:4px; }
+
+        .card { background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px;animation:cardIn 0.25s ease-out; }
+        @keyframes cardIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+
+        .badge { display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#6366f1;background:rgba(99,102,241,0.1);border-radius:4px;padding:2px 6px;margin-bottom:8px; }
+        h3 { font-size:14px;font-weight:700;margin-bottom:6px;line-height:1.3; }
+        p { font-size:13px;color:#6b7280;margin-bottom:12px;line-height:1.5; }
+
+        .actions { display:flex;gap:8px;flex-wrap:wrap; }
+        .btn-p,.btn-s { font-size:12px;font-weight:600;padding:7px 14px;border-radius:6px;border:none;cursor:pointer;font-family:inherit;transition:all 0.15s; }
+        .btn-p { background:#6366f1;color:white; }
+        .btn-p:hover { background:#4f46e5; }
+        .btn-s { background:transparent;color:#6b7280;border:1px solid #e5e7eb; }
+        .btn-s:hover { background:#e5e7eb;color:#111827; }
+
+        .loading { padding:20px;display:flex;align-items:center;justify-content:center;gap:8px;color:#9ca3af;font-size:13px; }
+        .dots { display:flex;gap:4px; }
+        .dots span { width:6px;height:6px;border-radius:50%;background:#6366f1;animation:bounce 1.2s ease-in-out infinite; }
+        .dots span:nth-child(2) { animation-delay:0.15s; }
+        .dots span:nth-child(3) { animation-delay:0.3s; }
+        @keyframes bounce { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} }
+
+        .footer-brand { font-size:10px;color:#9ca3af;text-align:center;padding:8px;border-top:1px solid #f3f4f6; }
+        .footer-brand a { color:#6366f1;text-decoration:none; }
+      `;
+    }
+  })();
+}
+</script>
+
+</body>
+</html>

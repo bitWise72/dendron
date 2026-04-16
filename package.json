@@ -1,0 +1,74 @@
+{
+  "name": "@dendron-sdk/core",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "The Zero-Liability Behavioral Intelligence SDK — makes any website intelligent about its visitors",
+  "main": "dist/dendron.cjs.js",
+  "module": "dist/dendron.esm.js",
+  "browser": "dist/dendron.min.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "rollup -c rollup.config.js",
+    "build:watch": "rollup -c rollup.config.js --watch",
+    "dev": "vite demo",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "format": "prettier --write 'src/**/*.ts' 'tests/**/*.ts'",
+    "format:check": "prettier --check 'src/**/*.ts'",
+    "clean": "rm -rf dist",
+    "ci": "npm run typecheck && npm run lint && npm run test && npm run build",
+    "demo:backend": "node demo/mock-backend.js"
+  },
+  "keywords": [
+    "behavioral-analytics",
+    "ai",
+    "sdk",
+    "smart-cards",
+    "intent",
+    "web-worker",
+    "shadow-dom",
+    "zero-liability",
+    "byok"
+  ],
+  "author": "Dendron SDK Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@types/node": "^20.11.5",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@vitest/coverage-v8": "^1.2.0",
+    "eslint": "^8.56.0",
+    "jsdom": "^24.0.0",
+    "prettier": "^3.2.4",
+    "rollup": "^4.9.6",
+    "rollup-plugin-dts": "^6.1.0",
+    "rollup-plugin-string": "^3.0.0",
+    "rollup-plugin-web-worker-loader": "^1.6.1",
+    "tslib": "^2.8.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.12",
+    "vitest": "^1.2.0"
+  },
+  "optionalDependencies": {
+    "@xenova/transformers": "^2.15.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dendron-sdk/dendron"
+  },
+  "sideEffects": false
+}

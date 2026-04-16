@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dendron SDK — Vanilla JS Integration</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      color: #111;
+      line-height: 1.6;
+    }
+    section { padding: 60px 0; }
+    h1 { font-size: 2.5em; margin-bottom: 0.5em; }
+    h2 { font-size: 1.5em; margin-bottom: 0.5em; color: #333; }
+    p { color: #555; margin-bottom: 1em; }
+    code {
+      background: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+    .cta-button {
+      display: inline-block;
+      padding: 12px 28px;
+      background: #6366f1;
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: 12px;
+    }
+    .cta-button:hover { background: #4f46e5; }
+  </style>
+</head>
+<body>
+
+  <!-- Sections with data-dendron-section for tracking -->
+  <section id="hero" data-dendron-section="hero">
+    <h1>My Product</h1>
+    <p>This is a vanilla HTML page running Dendron SDK. Scroll down and read the sections to see Smart Cards appear based on your behavior.</p>
+    <a href="#pricing" class="cta-button">See Pricing</a>
+  </section>
+
+  <section id="features" data-dendron-section="features">
+    <h2>Features</h2>
+    <p>Our product has amazing features that solve real problems. The Dendron SDK is tracking how long you spend reading this section and will surface relevant information when your engagement is high enough.</p>
+    <p>Feature highlights include: real-time analytics, team collaboration, API access, custom integrations, and enterprise-grade security.</p>
+    <p>We've designed everything to be developer-friendly with comprehensive documentation and SDKs in multiple languages.</p>
+  </section>
+
+  <section id="how-it-works" data-dendron-section="how-it-works">
+    <h2>How It Works</h2>
+    <p>Step 1: Sign up for a free account. Step 2: Integrate our SDK with two lines of code. Step 3: Start seeing insights immediately.</p>
+    <p>Our architecture is cloud-native, built on top of edge functions for sub-50ms response times globally. All data is encrypted at rest and in transit.</p>
+  </section>
+
+  <section id="pricing" data-dendron-section="pricing">
+    <h2>Pricing</h2>
+    <p>Free tier: $0/month with up to 10,000 events. Pro: $29/month with unlimited events and team features. Enterprise: Custom pricing with SLA and dedicated support.</p>
+    <p>All plans include a 14-day free trial. No credit card required for the free tier.</p>
+    <a href="#" class="cta-button">Start Free Trial</a>
+  </section>
+
+  <section id="testimonials" data-dendron-section="testimonials">
+    <h2>What Our Customers Say</h2>
+    <p>"This product transformed how we handle our workflow. Integration took 15 minutes." — Jane, CTO at TechCorp</p>
+    <p>"The API is the cleanest I've worked with. Great DX." — Sam, Senior Engineer at StartupXYZ</p>
+  </section>
+
+  <!-- CDN Integration with SRI -->
+  <!--
+    In production, use the CDN version:
+    <script src="https://cdn.dendron.dev/v1/dendron.min.js"
+      integrity="sha384-{hash}"
+      crossorigin="anonymous"></script>
+  -->
+
+  <!-- For local development, use the built bundle -->
+  <script src="../dist/dendron.min.js"></script>
+
+  <script>
+    // ─── Dendron Integration ─────────────────────────────────
+    // This is the simplest possible integration.
+    // The only required parameter is onQuery.
+
+    document.addEventListener('DOMContentLoaded', function () {
+      // Guard: check Dendron loaded
+      if (typeof Dendron === 'undefined') {
+        console.warn('Dendron SDK not loaded. Run npm run build first, or use the CDN version.');
+        return;
+      }
+
+      Dendron.init({
+        // REQUIRED: This callback routes to YOUR backend.
+        // Dendron assembles the payload; you send it to your LLM.
+        onQuery: async function (payload) {
+          // Option A: Your own backend proxy
+          // const res = await fetch('/api/ai-proxy', {
+          //   method: 'POST',
+          //   headers: { 'Content-Type': 'application/json' },
+          //   body: JSON.stringify(payload)
+          // });
+          // return res.json();
+
+          // Option B: Mock backend for demo (run: node demo/mock-backend.js)
+          try {
+            var res = await fetch('http://localhost:3001/api/dendron', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            });
+            return res.json();
+          } catch (e) {
+            // Offline fallback: return a static greeting
+            return {
+              type: 'greeting',
+              headline: 'Hey there!',
+              body: 'This is a demo Smart Card. Connect a backend to see AI-generated contextual responses.',
+              actions: [
+                { label: 'Learn more', href: '#features', variant: 'primary' },
+                { label: 'Dismiss', action: 'dismiss', variant: 'ghost' },
+              ],
+            };
+          }
+        },
+
+        // Describe your product for better LLM context
+        systemContext: 'This is a SaaS product landing page with features, pricing, and testimonials.',
+
+        // Optional: lower threshold for demo
+        intent: {
+          triggerThreshold: 40,
+          cooldownSeconds: 15,
+          maxCardsPerSession: 6,
+        },
+
+        // Enable debug overlay during development
+        debug: true,
+      });
+
+      // ─── Event Hooks ──────────────────────────────────────
+      Dendron.on('trigger', function (payload) {
+        console.log('[My App] Dendron trigger fired', {
+          score: payload.trigger.score,
+          section: payload.visitor.focusSection,
+        });
+      });
+
+      Dendron.on('card:rendered', function (card) {
+        console.log('[My App] Smart Card shown:', card.type);
+      });
+
+      Dendron.on('card:action', function (action) {
+        console.log('[My App] User clicked:', action.label);
+        // Route to your app's navigation
+        if (action.href && action.href.startsWith('#')) {
+          document.querySelector(action.href)?.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+
+      Dendron.on('error', function (err) {
+        console.error('[My App] Dendron error:', err.message);
+      });
+    });
+  </script>
+
+</body>
+</html>
