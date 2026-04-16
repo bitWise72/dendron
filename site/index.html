@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dendron — Make Any Website Intelligent</title>
+  <meta name="description" content="The zero-liability behavioral intelligence SDK. 13KB. One callback. Your LLM, your keys." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand: #6366f1;
+      --brand-dark: #4f46e5;
+      --brand-glow: rgba(99,102,241,0.15);
+      --text: #0f172a;
+      --muted: #64748b;
+      --bg: #ffffff;
+      --surface: #f8fafc;
+      --border: #e2e8f0;
+      --code-bg: #0f172a;
+      --code-text: #e2e8f0;
+      --green: #22c55e;
+      --font: 'Inter', -apple-system, sans-serif;
+      --mono: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); color: var(--text); background: var(--bg); line-height: 1.6; }
+
+    /* ─── NAV ──────────────────────────────────────── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1060px; margin: 0 auto; padding: 0 24px;
+      height: 56px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo { font-weight: 900; font-size: 18px; color: var(--brand); letter-spacing: -0.03em; text-decoration: none; }
+    .nav-links { display: flex; gap: 28px; list-style: none; align-items: center; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 500; transition: color 0.15s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      background: var(--brand); color: white !important; padding: 6px 16px; border-radius: 6px;
+      font-weight: 600 !important; font-size: 13px !important; transition: background 0.15s;
+    }
+    .nav-cta:hover { background: var(--brand-dark); }
+
+    /* ─── SECTIONS ─────────────────────────────────── */
+    section { padding: 80px 24px; }
+    .container { max-width: 1060px; margin: 0 auto; }
+
+    /* ─── HERO ─────────────────────────────────────── */
+    .hero { text-align: center; padding: 100px 24px 60px; }
+    .hero-badge {
+      display: inline-block; font-size: 12px; font-weight: 600; color: var(--brand);
+      background: var(--brand-glow); padding: 4px 14px; border-radius: 100px;
+      margin-bottom: 20px; letter-spacing: 0.02em;
+    }
+    .hero h1 {
+      font-size: clamp(36px, 5vw, 56px); font-weight: 900; line-height: 1.1;
+      letter-spacing: -0.03em; margin-bottom: 16px;
+    }
+    .hero h1 span { color: var(--brand); }
+    .hero p { font-size: 18px; color: var(--muted); max-width: 560px; margin: 0 auto 32px; }
+    .hero-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--brand); color: white; padding: 12px 28px; border-radius: 8px;
+      font-weight: 600; font-size: 15px; text-decoration: none; border: none; cursor: pointer;
+      transition: background 0.15s, transform 0.1s; display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-primary:hover { background: var(--brand-dark); }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-secondary {
+      background: var(--surface); color: var(--text); padding: 12px 28px; border-radius: 8px;
+      font-weight: 600; font-size: 15px; text-decoration: none; border: 1px solid var(--border);
+      transition: background 0.15s; display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-secondary:hover { background: var(--border); }
+    .hero-stats {
+      display: flex; gap: 48px; justify-content: center; margin-top: 48px;
+      padding-top: 32px; border-top: 1px solid var(--border);
+    }
+    .hero-stat-value { font-size: 28px; font-weight: 800; color: var(--text); }
+    .hero-stat-label { font-size: 13px; color: var(--muted); }
+
+    /* ─── HOW IT WORKS ─────────────────────────────── */
+    .section-label {
+      font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--brand); margin-bottom: 8px;
+    }
+    .section-title { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .section-sub { font-size: 16px; color: var(--muted); margin-bottom: 40px; max-width: 560px; }
+
+    .flow {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px; margin-bottom: 48px;
+    }
+    .flow-step {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 24px; position: relative;
+    }
+    .flow-num {
+      width: 28px; height: 28px; border-radius: 50%; background: var(--brand); color: white;
+      font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+      margin-bottom: 12px;
+    }
+    .flow-step h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .flow-step p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    /* ─── INTEGRATION WIZARD ───────────────────────── */
+    .wizard { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .wizard-steps { display: flex; gap: 0; margin-bottom: 32px; border-bottom: 2px solid var(--border); }
+    .wizard-tab {
+      flex: 1; padding: 14px 16px; text-align: center; font-size: 14px; font-weight: 600;
+      color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent;
+      margin-bottom: -2px; transition: all 0.15s; background: none; border-top: none;
+      border-left: none; border-right: none; font-family: var(--font);
+    }
+    .wizard-tab:hover { color: var(--text); }
+    .wizard-tab.active { color: var(--brand); border-bottom-color: var(--brand); }
+    .wizard-tab .step-num {
+      display: inline-flex; width: 22px; height: 22px; border-radius: 50%; font-size: 11px;
+      font-weight: 700; align-items: center; justify-content: center; margin-right: 6px;
+      background: var(--border); color: var(--muted); transition: all 0.15s;
+    }
+    .wizard-tab.active .step-num { background: var(--brand); color: white; }
+    .wizard-tab.done .step-num { background: var(--green); color: white; }
+
+    .wizard-panel { display: none; }
+    .wizard-panel.active { display: block; }
+
+    .wizard-panel h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .wizard-panel > p { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
+
+    /* ─── CODE BLOCKS ──────────────────────────────── */
+    .code-block {
+      background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+      padding: 20px; font-family: var(--mono); font-size: 13px; line-height: 1.7;
+      overflow-x: auto; position: relative; margin-bottom: 16px; white-space: pre;
+    }
+    .code-block .kw { color: #c084fc; }
+    .code-block .str { color: #86efac; }
+    .code-block .fn { color: #93c5fd; }
+    .code-block .cmt { color: #475569; }
+    .code-block .num { color: #fbbf24; }
+    .code-block .op { color: #94a3b8; }
+
+    .copy-btn {
+      position: absolute; top: 10px; right: 10px; background: #1e293b; color: #94a3b8;
+      border: 1px solid #334155; padding: 4px 10px; border-radius: 6px; font-size: 11px;
+      font-weight: 500; cursor: pointer; font-family: var(--font); transition: all 0.15s;
+    }
+    .copy-btn:hover { background: #334155; color: white; }
+    .copy-btn.copied { background: #166534; color: #86efac; border-color: #22c55e; }
+
+    .code-label {
+      font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase;
+      letter-spacing: 0.06em; margin-bottom: 8px;
+    }
+
+    /* ─── FRAMEWORK TABS ───────────────────────────── */
+    .fw-tabs { display: flex; gap: 0; margin-bottom: 0; }
+    .fw-tab {
+      padding: 8px 16px; font-size: 12px; font-weight: 600; color: var(--muted);
+      background: #1e293b; border: none; cursor: pointer; font-family: var(--mono);
+      border-top-left-radius: 8px; border-top-right-radius: 8px; transition: all 0.15s;
+    }
+    .fw-tab:hover { color: var(--code-text); }
+    .fw-tab.active { background: var(--code-bg); color: var(--brand); }
+    .fw-panel { display: none; }
+    .fw-panel.active { display: block; }
+    .fw-panel .code-block { border-top-left-radius: 0; }
+
+    /* ─── CALLOUT ──────────────────────────────────── */
+    .callout {
+      background: rgba(99,102,241,0.06); border: 1px solid rgba(99,102,241,0.15);
+      border-radius: 10px; padding: 16px 20px; margin: 20px 0;
+      font-size: 13px; color: var(--text); display: flex; gap: 10px; align-items: flex-start;
+    }
+    .callout-icon { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
+
+    /* ─── FEATURES GRID ────────────────────────────── */
+    .features-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px; margin-top: 40px;
+    }
+    .feature-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 24px;
+    }
+    .feature-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .feature-card p { font-size: 13px; color: var(--muted); }
+    .feature-icon {
+      width: 36px; height: 36px; border-radius: 8px; background: var(--brand-glow);
+      display: flex; align-items: center; justify-content: center; margin-bottom: 12px;
+      font-size: 18px;
+    }
+
+    /* ─── FOOTER ───────────────────────────────────── */
+    footer {
+      padding: 32px 24px; text-align: center; font-size: 13px; color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--brand); text-decoration: none; }
+
+    /* ─── RESPONSIVE ───────────────────────────────── */
+    @media (max-width: 640px) {
+      .hero-stats { flex-direction: column; gap: 16px; }
+      .wizard-tab { font-size: 12px; padding: 10px 8px; }
+      .nav-links { gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── NAV ───────────────────────────────────────────── -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="logo">dendron</a>
+    <ul class="nav-links">
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#integrate">Integrate</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="https://github.com/bitWise72/dendron" target="_blank">GitHub</a></li>
+      <li><a href="#integrate" class="nav-cta">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ─── HERO ──────────────────────────────────────────── -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">Now live on npm &mdash; v1.0.1</div>
+    <h1>Make any website<br/><span>intelligent about its visitors</span></h1>
+    <p>Dendron tracks behavioral signals in the browser, scores visitor intent, and surfaces AI-generated Smart Cards at exactly the right moment. Zero server. Your LLM. Your keys.</p>
+    <div class="hero-buttons">
+      <a href="#integrate" class="btn-primary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 17l6-6-6-6"/><path d="M12 19h8"/></svg>
+        Start Integrating
+      </a>
+      <a href="https://github.com/bitWise72/dendron" target="_blank" class="btn-secondary">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .3a12 12 0 00-3.8 23.38c.6.11.82-.26.82-.58v-2.02c-3.34.73-4.04-1.61-4.04-1.61a3.18 3.18 0 00-1.33-1.76c-1.09-.74.08-.73.08-.73a2.52 2.52 0 011.84 1.24 2.56 2.56 0 003.5 1 2.56 2.56 0 01.76-1.61c-2.67-.3-5.47-1.33-5.47-5.93a4.64 4.64 0 011.24-3.22 4.3 4.3 0 01.12-3.18s1-.33 3.3 1.23a11.38 11.38 0 016 0c2.28-1.56 3.29-1.23 3.29-1.23a4.3 4.3 0 01.12 3.18 4.64 4.64 0 011.23 3.22c0 4.61-2.8 5.63-5.48 5.92a2.87 2.87 0 01.82 2.23v3.29c0 .32.21.7.82.58A12 12 0 0012 .3"/></svg>
+        View on GitHub
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div><div class="hero-stat-value">13KB</div><div class="hero-stat-label">gzipped</div></div>
+      <div><div class="hero-stat-value">0</div><div class="hero-stat-label">server dependencies</div></div>
+      <div><div class="hero-stat-value">67</div><div class="hero-stat-label">tests passing</div></div>
+      <div><div class="hero-stat-value">5</div><div class="hero-stat-label">Smart Card types</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── HOW IT WORKS ──────────────────────────────────── -->
+<section id="how">
+  <div class="container">
+    <div class="section-label">How it works</div>
+    <div class="section-title">Three minutes to intelligent</div>
+    <p class="section-sub">Dendron runs entirely in the browser. No backend to deploy, no database to manage, no user data to worry about.</p>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <h3>Visitor browses your site</h3>
+        <p>Dendron tracks scroll depth, reading time, clicks, and cursor patterns inside a Web Worker. Zero main-thread impact.</p>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <h3>Intent score crosses threshold</h3>
+        <p>The Context Engine scores engagement (0-100) across three dimensions. When it crosses your threshold, it fires.</p>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <h3>Smart Card appears</h3>
+        <p>Dendron calls your onQuery callback with behavioral context. Your backend asks your LLM. Dendron renders the response.</p>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">4</div>
+        <h3>Visitor converts</h3>
+        <p>Pricing cards when they're on pricing. Feature cards when they're exploring. The right message at the right moment.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <span class="callout-icon">&#128274;</span>
+      <div><strong>Zero liability by design.</strong> Dendron never sees your API keys (BYOK callback). Never stores user data on any server. Never makes network requests. The only egress is your own onQuery callback.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── INTEGRATION WIZARD ────────────────────────────── -->
+<section id="integrate" class="wizard">
+  <div class="container">
+    <div class="section-label">Integration Guide</div>
+    <div class="section-title">Add Dendron to your site</div>
+    <p class="section-sub">Three steps. Works with any framework. Under 5 minutes.</p>
+
+    <div class="wizard-steps">
+      <button class="wizard-tab active" onclick="showStep(0)"><span class="step-num">1</span> Install</button>
+      <button class="wizard-tab" onclick="showStep(1)"><span class="step-num">2</span> Add to your page</button>
+      <button class="wizard-tab" onclick="showStep(2)"><span class="step-num">3</span> Create backend proxy</button>
+    </div>
+
+    <!-- STEP 1: INSTALL -->
+    <div class="wizard-panel active" id="step-0">
+      <h3>Install the SDK</h3>
+      <p>Choose npm or CDN. That's the only dependency.</p>
+
+      <div class="code-label">npm</div>
+      <div class="code-block" id="code-install-npm"><button class="copy-btn" onclick="copyCode('code-install-npm')">Copy</button>npm install dendron-sdk</div>
+
+      <div class="code-label" style="margin-top:20px">CDN (script tag)</div>
+      <div class="code-block" id="code-install-cdn"><button class="copy-btn" onclick="copyCode('code-install-cdn')">Copy</button><span class="op">&lt;</span><span class="kw">script</span> <span class="fn">src</span>=<span class="str">"https://unpkg.com/dendron-sdk@1.0.1/dist/dendron.min.js"</span><span class="op">&gt;&lt;/</span><span class="kw">script</span><span class="op">&gt;</span></div>
+
+      <div class="callout">
+        <span class="callout-icon">&#128161;</span>
+        <div>The npm package is <strong>13KB gzipped</strong> with zero production dependencies. The optional micro-embeddings module (Transformers.js) is lazy-loaded only when needed.</div>
+      </div>
+
+      <button class="btn-primary" onclick="showStep(1)" style="margin-top:12px">Next: Add to your page &rarr;</button>
+    </div>
+
+    <!-- STEP 2: ADD TO PAGE -->
+    <div class="wizard-panel" id="step-1">
+      <h3>Initialize Dendron on your page</h3>
+      <p>Pick your framework. The only required parameter is <code style="background:#1e293b;color:#e2e8f0;padding:2px 6px;border-radius:4px;font-size:12px;">onQuery</code> &mdash; a callback that routes to your backend.</p>
+
+      <div class="fw-tabs">
+        <button class="fw-tab active" onclick="showFw('react')">React / Next.js</button>
+        <button class="fw-tab" onclick="showFw('vue')">Vue / Nuxt</button>
+        <button class="fw-tab" onclick="showFw('vanilla')">Vanilla JS</button>
+        <button class="fw-tab" onclick="showFw('html')">Script Tag</button>
+      </div>
+
+      <div class="fw-panel active" id="fw-react">
+        <div class="code-block" id="code-react"><button class="copy-btn" onclick="copyCode('code-react')">Copy</button><span class="cmt">// app/layout.tsx (or any root component)</span>
+<span class="str">'use client'</span>;
+<span class="kw">import</span> { useEffect } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { Dendron } <span class="kw">from</span> <span class="str">'dendron-sdk'</span>;
+
+<span class="kw">export default function</span> <span class="fn">RootLayout</span>({ children }) {
+  <span class="fn">useEffect</span>(() <span class="kw">=></span> {
+    Dendron.<span class="fn">init</span>({
+      <span class="fn">onQuery</span>: <span class="kw">async</span> (payload) <span class="kw">=></span> {
+        <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'/api/dendron'</span>, {
+          method: <span class="str">'POST'</span>,
+          headers: { <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span> },
+          body: JSON.<span class="fn">stringify</span>(payload),
+        });
+        <span class="kw">return</span> res.<span class="fn">json</span>();
+      },
+      systemContext: <span class="str">'Your product description here'</span>,
+    });
+    <span class="kw">return</span> () <span class="kw">=></span> Dendron.<span class="fn">destroy</span>();
+  }, []);
+
+  <span class="kw">return</span> &lt;&gt;{children}&lt;/&gt;;
+}</div>
+      </div>
+
+      <div class="fw-panel" id="fw-vue">
+        <div class="code-block" id="code-vue"><button class="copy-btn" onclick="copyCode('code-vue')">Copy</button><span class="cmt">&lt;!-- App.vue --&gt;</span>
+<span class="op">&lt;</span><span class="kw">script</span> setup<span class="op">&gt;</span>
+<span class="kw">import</span> { onMounted, onUnmounted } <span class="kw">from</span> <span class="str">'vue'</span>
+<span class="kw">import</span> { Dendron } <span class="kw">from</span> <span class="str">'dendron-sdk'</span>
+
+<span class="fn">onMounted</span>(() <span class="kw">=></span> {
+  Dendron.<span class="fn">init</span>({
+    <span class="fn">onQuery</span>: <span class="kw">async</span> (payload) <span class="kw">=></span> {
+      <span class="kw">const</span> { data } = <span class="kw">await</span> <span class="fn">$fetch</span>(<span class="str">'/api/dendron'</span>, {
+        method: <span class="str">'POST'</span>,
+        body: payload,
+      })
+      <span class="kw">return</span> data
+    },
+    systemContext: <span class="str">'Your product description here'</span>,
+  })
+})
+
+<span class="fn">onUnmounted</span>(() <span class="kw">=></span> Dendron.<span class="fn">destroy</span>())
+<span class="op">&lt;/</span><span class="kw">script</span><span class="op">&gt;</span></div>
+      </div>
+
+      <div class="fw-panel" id="fw-vanilla">
+        <div class="code-block" id="code-vanilla"><button class="copy-btn" onclick="copyCode('code-vanilla')">Copy</button><span class="kw">import</span> { Dendron } <span class="kw">from</span> <span class="str">'dendron-sdk'</span>;
+
+Dendron.<span class="fn">init</span>({
+  <span class="fn">onQuery</span>: <span class="kw">async</span> (payload) <span class="kw">=></span> {
+    <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'/api/dendron'</span>, {
+      method: <span class="str">'POST'</span>,
+      headers: { <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span> },
+      body: JSON.<span class="fn">stringify</span>(payload),
+    });
+    <span class="kw">return</span> res.<span class="fn">json</span>();
+  },
+  systemContext: <span class="str">'Your product description here'</span>,
+});</div>
+      </div>
+
+      <div class="fw-panel" id="fw-html">
+        <div class="code-block" id="code-html"><button class="copy-btn" onclick="copyCode('code-html')">Copy</button><span class="op">&lt;</span><span class="kw">script</span> <span class="fn">src</span>=<span class="str">"https://unpkg.com/dendron-sdk@1.0.1/dist/dendron.min.js"</span><span class="op">&gt;&lt;/</span><span class="kw">script</span><span class="op">&gt;</span>
+<span class="op">&lt;</span><span class="kw">script</span><span class="op">&gt;</span>
+  Dendron.<span class="fn">init</span>({
+    <span class="fn">onQuery</span>: <span class="kw">async</span> <span class="kw">function</span>(payload) {
+      <span class="kw">var</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'/api/dendron'</span>, {
+        method: <span class="str">'POST'</span>,
+        headers: { <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span> },
+        body: JSON.<span class="fn">stringify</span>(payload),
+      });
+      <span class="kw">return</span> res.<span class="fn">json</span>();
+    },
+    systemContext: <span class="str">'Your product description here'</span>,
+  });
+<span class="op">&lt;/</span><span class="kw">script</span><span class="op">&gt;</span></div>
+      </div>
+
+      <div class="callout">
+        <span class="callout-icon">&#9889;</span>
+        <div><strong>Section auto-discovery.</strong> Dendron automatically finds <code style="background:#1e293b;color:#e2e8f0;padding:1px 4px;border-radius:3px;font-size:11px;">&lt;section id="..."&gt;</code>, <code style="background:#1e293b;color:#e2e8f0;padding:1px 4px;border-radius:3px;font-size:11px;">&lt;article&gt;</code>, and <code style="background:#1e293b;color:#e2e8f0;padding:1px 4px;border-radius:3px;font-size:11px;">[data-dendron-section]</code> elements. For best results, add <code style="background:#1e293b;color:#e2e8f0;padding:1px 4px;border-radius:3px;font-size:11px;">data-dendron-section="pricing"</code> to your key sections.</div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:12px;">
+        <button class="btn-secondary" onclick="showStep(0)">&larr; Back</button>
+        <button class="btn-primary" onclick="showStep(2)">Next: Backend proxy &rarr;</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: BACKEND -->
+    <div class="wizard-panel" id="step-2">
+      <h3>Create your backend proxy</h3>
+      <p>Dendron calls your <code style="background:#1e293b;color:#e2e8f0;padding:2px 6px;border-radius:4px;font-size:12px;">onQuery</code> with behavioral context. Your backend sends it to your LLM and returns the Smart Card JSON. Dendron never sees your API key.</p>
+
+      <div class="fw-tabs">
+        <button class="fw-tab active" onclick="showBe('nextjs')">Next.js</button>
+        <button class="fw-tab" onclick="showBe('express')">Express</button>
+        <button class="fw-tab" onclick="showBe('python')">Python / Flask</button>
+      </div>
+
+      <div class="fw-panel active" id="be-nextjs">
+        <div class="code-block" id="code-nextjs"><button class="copy-btn" onclick="copyCode('code-nextjs')">Copy</button><span class="cmt">// pages/api/dendron.ts</span>
+<span class="kw">import</span> OpenAI <span class="kw">from</span> <span class="str">'openai'</span>;
+<span class="kw">import type</span> { NextApiRequest, NextApiResponse } <span class="kw">from</span> <span class="str">'next'</span>;
+
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="fn">OpenAI</span>({ apiKey: process.env.OPENAI_API_KEY });
+
+<span class="kw">export default async function</span> <span class="fn">handler</span>(req: NextApiRequest, res: NextApiResponse) {
+  <span class="kw">const</span> completion = <span class="kw">await</span> client.chat.completions.<span class="fn">create</span>({
+    model: <span class="str">'gpt-4o-mini'</span>,
+    messages: [{ role: <span class="str">'user'</span>, content: req.body.prompt }],
+    response_format: { type: <span class="str">'json_object'</span> },
+    max_tokens: <span class="num">400</span>,
+  });
+
+  <span class="kw">const</span> card = JSON.<span class="fn">parse</span>(completion.choices[<span class="num">0</span>].message.content ?? <span class="str">'{}'</span>);
+  res.<span class="fn">json</span>(card);
+}</div>
+      </div>
+
+      <div class="fw-panel" id="be-express">
+        <div class="code-block" id="code-express"><button class="copy-btn" onclick="copyCode('code-express')">Copy</button><span class="cmt">// server.js</span>
+<span class="kw">import</span> express <span class="kw">from</span> <span class="str">'express'</span>;
+<span class="kw">import</span> OpenAI <span class="kw">from</span> <span class="str">'openai'</span>;
+
+<span class="kw">const</span> app = <span class="fn">express</span>();
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="fn">OpenAI</span>({ apiKey: process.env.OPENAI_API_KEY });
+
+app.<span class="fn">use</span>(express.<span class="fn">json</span>());
+
+app.<span class="fn">post</span>(<span class="str">'/api/dendron'</span>, <span class="kw">async</span> (req, res) <span class="kw">=></span> {
+  <span class="kw">const</span> completion = <span class="kw">await</span> client.chat.completions.<span class="fn">create</span>({
+    model: <span class="str">'gpt-4o-mini'</span>,
+    messages: [{ role: <span class="str">'user'</span>, content: req.body.prompt }],
+    response_format: { type: <span class="str">'json_object'</span> },
+  });
+  res.<span class="fn">json</span>(JSON.<span class="fn">parse</span>(completion.choices[<span class="num">0</span>].message.content));
+});
+
+app.<span class="fn">listen</span>(<span class="num">3001</span>);</div>
+      </div>
+
+      <div class="fw-panel" id="be-python">
+        <div class="code-block" id="code-python"><button class="copy-btn" onclick="copyCode('code-python')">Copy</button><span class="cmt"># app.py</span>
+<span class="kw">from</span> flask <span class="kw">import</span> Flask, request, jsonify
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+<span class="kw">import</span> json
+
+app = <span class="fn">Flask</span>(__name__)
+client = <span class="fn">OpenAI</span>()
+
+<span class="fn">@app.post</span>(<span class="str">'/api/dendron'</span>)
+<span class="kw">def</span> <span class="fn">dendron_proxy</span>():
+    payload = request.<span class="fn">get_json</span>()
+    completion = client.chat.completions.<span class="fn">create</span>(
+        model=<span class="str">"gpt-4o-mini"</span>,
+        messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: payload[<span class="str">"prompt"</span>]}],
+        response_format={<span class="str">"type"</span>: <span class="str">"json_object"</span>},
+    )
+    card = json.<span class="fn">loads</span>(completion.choices[<span class="num">0</span>].message.content)
+    <span class="kw">return</span> <span class="fn">jsonify</span>(card)</div>
+      </div>
+
+      <div class="callout">
+        <span class="callout-icon">&#127919;</span>
+        <div><strong>Works with any LLM.</strong> Swap <code style="background:#1e293b;color:#e2e8f0;padding:1px 4px;border-radius:3px;font-size:11px;">gpt-4o-mini</code> for Claude, Groq, Mistral, Ollama, or any provider. Dendron doesn't care what's behind your callback.</div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:12px;">
+        <button class="btn-secondary" onclick="showStep(1)">&larr; Back</button>
+        <a href="https://github.com/bitWise72/dendron" target="_blank" class="btn-primary">View full docs on GitHub &rarr;</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FEATURES ──────────────────────────────────────── -->
+<section id="features">
+  <div class="container">
+    <div class="section-label">Features</div>
+    <div class="section-title">Everything you need, nothing you don't</div>
+    <p class="section-sub">13KB of intelligence. No bloat.</p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">&#9889;</div>
+        <h3>Web Worker Architecture</h3>
+        <p>All behavioral processing runs off the main thread. Your site stays fast. &lt;1ms CPU budget per frame.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#127912;</div>
+        <h3>5 Smart Card Types</h3>
+        <p>Greeting, Feature, Pricing, Engagement, Comparison. Each contextually triggered by visitor behavior.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#128274;</div>
+        <h3>Shadow DOM Isolation</h3>
+        <p>Closed shadow root. Your CSS never leaks in. Dendron's CSS never leaks out. Works on any site.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#128273;</div>
+        <h3>BYOK Architecture</h3>
+        <p>Bring Your Own Key. Dendron never sees, stores, or transmits API keys. Your backend, your rules.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#127760;</div>
+        <h3>Framework Agnostic</h3>
+        <p>React, Vue, Next.js, Nuxt, Astro, WordPress, vanilla HTML. One API, works everywhere.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#129302;</div>
+        <h3>WebMCP Agent Ready</h3>
+        <p>Optional plugin auto-registers your site's actions for agentic browsers. Future-proof your UX.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA ───────────────────────────────────────────── -->
+<section style="text-align:center;padding:80px 24px;">
+  <div class="container">
+    <div class="section-title">Ready to make your site intelligent?</div>
+    <p class="section-sub" style="margin:8px auto 32px;">One install. One callback. Five minutes.</p>
+    <div class="hero-buttons">
+      <a href="#integrate" class="btn-primary">Start Integrating</a>
+      <a href="https://www.npmjs.com/package/dendron-sdk" target="_blank" class="btn-secondary">View on npm</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ────────────────────────────────────────── -->
+<footer>
+  <p>&copy; 2026 Dendron SDK &middot; <a href="https://github.com/bitWise72/dendron">GitHub</a> &middot; <a href="https://www.npmjs.com/package/dendron-sdk">npm</a> &middot; MIT License</p>
+</footer>
+
+<!-- ─── SCRIPTS ───────────────────────────────────────── -->
+<script>
+// Wizard step navigation
+function showStep(n) {
+  document.querySelectorAll('.wizard-panel').forEach((p,i) => p.classList.toggle('active', i===n));
+  document.querySelectorAll('.wizard-tab').forEach((t,i) => {
+    t.classList.toggle('active', i===n);
+    t.classList.toggle('done', i<n);
+  });
+}
+
+// Framework tabs (step 2)
+function showFw(id) {
+  document.querySelectorAll('#step-1 .fw-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#step-1 .fw-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('fw-'+id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Backend tabs (step 3)
+function showBe(id) {
+  document.querySelectorAll('#step-2 .fw-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#step-2 .fw-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('be-'+id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Copy to clipboard
+function copyCode(id) {
+  const el = document.getElementById(id);
+  const text = el.textContent.replace(/^Copy/, '').trim();
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = el.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+
+</body>
+</html>

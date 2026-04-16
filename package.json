@@ -33,7 +33,7 @@
     "format:check": "prettier --check 'src/**/*.ts'",
     "clean": "rm -rf dist",
     "ci": "npm run typecheck && npm run lint && npm run test && npm run build",
-    "demo:backend": "node demo/mock-backend.js"
+    "demo:backend": "node demo/mock-backend.cjs"
   },
   "keywords": [
     "behavioral-analytics",
