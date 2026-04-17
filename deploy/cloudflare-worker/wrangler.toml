@@ -1,0 +1,9 @@
+name = "dendron-proxy"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+# Set these via: wrangler secret put DENDRON_API_KEY
+# [vars]
+# DENDRON_PROVIDER = "openai"
+# DENDRON_MODEL = "gpt-5.4-mini"
+# ALLOWED_ORIGINS = "https://yoursite.com"

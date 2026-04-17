@@ -1,0 +1,11 @@
+{
+  "functions": {
+    "api/dendron.js": {
+      "memory": 128,
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    { "source": "/", "destination": "/api/dendron" }
+  ]
+}
