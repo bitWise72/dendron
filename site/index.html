@@ -428,6 +428,14 @@
       <span>🎉</span>
       <div><strong>That's it!</strong> Paste this script on your site. Dendron will track user behavior and show smart cards powered by our Gemini backend. Check the console to see real-time tracking.</div>
     </div>
+    
+    <!-- TEST QUICK DEMO BUTTON -->
+    <div style="margin-top:24px;text-align:center;">
+      <button onclick="testQuickDemo()" style="background:var(--cyan);color:var(--black);padding:12px 28px;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:15px;font-family:var(--font);transition:all 0.2s;">
+        ▶ Test Quick Demo
+      </button>
+      <div id="demo-test-status" style="margin-top:16px;font-size:13px;color:var(--muted);line-height:1.6;"></div>
+    </div>
     <div style="display:flex;gap:12px;margin-top:28px;">
       <button class="btn-secondary" onclick="showSetupStep(0)">Build Your Own &rarr;</button>
       <a href="https://github.com/bitWise72/dendron" target="_blank" class="btn-primary">View Docs &rarr;</a>
@@ -957,6 +965,75 @@ npx netlify deploy --prod`,
     guide: `<strong>Register on Netlify:</strong><br/>1. Go to <a href="https://app.netlify.com/signup" target="_blank" style="color:var(--gold);">netlify.com/signup</a><br/>2. Create an account (free)<br/>3. Install Netlify CLI: <code style="background:#1E1E1E;padding:2px 6px;border-radius:4px;">npm install -g netlify-cli</code><br/>4. Login: <code style="background:#1E1E1E;padding:2px 6px;border-radius:4px;">netlify login</code><br/>5. Then run the deploy command below`,
   },
 };
+
+// ═══ QUICK DEMO ASYNC TESTING ═══
+async function testQuickDemo() {
+  const statusEl = document.getElementById('demo-test-status');
+  const btn = event.target;
+  
+  try {
+    btn.disabled = true;
+    btn.style.opacity = '0.6';
+    statusEl.innerHTML = '⏳ Sending request...';
+    
+    // Initial request with async=true flag
+    const resp = await fetch('https://dendron-landing-page.vercel.app/api/dendron', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt: 'User engaged with product page: scrolled 500px, clicked CTA button. Classify behavior.',
+        async: true, // Enable async mode
+      }),
+    });
+    
+    if (resp.status !== 202) {
+      throw new Error(`Unexpected status: ${resp.status}`);
+    }
+    
+    const { jobId, statusUrl } = await resp.json();
+    statusEl.innerHTML = `📋 Job queued: <code style="background:#1E1E1E;padding:2px 6px;border-radius:4px;font-size:11px;">${jobId}</code><br/>⏳ Polling for results...`;
+    
+    // Poll for results
+    let completed = false;
+    let attempts = 0;
+    const maxAttempts = 120; // 2 minutes max
+    
+    while (!completed && attempts < maxAttempts) {
+      await new Promise(r => setTimeout(r, 1000)); // Wait 1s before polling
+      attempts++;
+      
+      const pollResp = await fetch(`https://dendron-landing-page.vercel.app${statusUrl}`);
+      const job = await pollResp.json();
+      
+      if (job.status === 'completed') {
+        completed = true;
+        statusEl.innerHTML = `
+          ✅ <strong>Success!</strong><br/>
+          <strong>Classification:</strong> ${job.result.classification}<br/>
+          <strong>Confidence:</strong> ${(job.result.confidence * 100).toFixed(0)}%<br/>
+          <small style="color:var(--muted);">Processed in ${attempts}s</small>
+        `;
+        console.log('Dendron Result:', job.result);
+      } else if (job.status === 'error') {
+        throw new Error(job.error);
+      } else {
+        statusEl.innerHTML = `⏳ Processing... (${attempts}s)`;
+      }
+    }
+    
+    if (!completed) {
+      throw new Error('Timeout: Processing took too long');
+    }
+  } catch (err) {
+    statusEl.innerHTML = `❌ Error: ${err.message}`;
+    console.error('Dendron Error:', err);
+  } finally {
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  }
+}
+
+window.testQuickDemo = testQuickDemo;
 
 // ═══ SETUP FLOW ═══
 let setupPlatform = 'cloudflare';

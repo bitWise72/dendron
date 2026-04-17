@@ -98,6 +98,49 @@ function getRandomGeminiKey() {
   return keys[Math.floor(Math.random() * keys.length)];
 }
 
+// Job queue system for async processing (solves 60s timeout)
+const jobCache = new Map();
+
+function generateJobId() {
+  return `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+}
+
+function cacheJob(id, data) {
+  jobCache.set(id, {
+    ...data,
+    createdAt: Date.now(),
+    expiresAt: Date.now() + 300000, // 5 min TTL
+  });
+  setTimeout(() => jobCache.delete(id), 300000);
+}
+
+function getJob(id) {
+  const job = jobCache.get(id);
+  if (!job || Date.now() > job.expiresAt) {
+    jobCache.delete(id);
+    return null;
+  }
+  return job;
+}
+
+async function processInBackground(jobId, provider, model, apiKey, prompt) {
+  try {
+    cacheJob(jobId, { status: 'processing', progress: 'Calling Gemini API...' });
+    const config = PROVIDER_CONFIGS[provider];
+    const apiUrl = typeof config.url === 'function' ? config.url(model, process.env.OLLAMA_HOST) : config.url;
+    const resp = await fetch(apiUrl, {
+      method: 'POST',
+      headers: config.headers(apiKey),
+      body: config.body(model, prompt),
+    });
+    if (!resp.ok) throw new Error(`API error ${resp.status}`);
+    const data = await resp.json();
+    cacheJob(jobId, { status: 'completed', result: config.parse(data) });
+  } catch (err) {
+    cacheJob(jobId, { status: 'error', error: err.message });
+  }
+}
+
 export default async function handler(req, res) {
   const allowed = process.env.ALLOWED_ORIGINS || '*';
   const origin = req.headers.origin || '';
@@ -113,19 +156,34 @@ export default async function handler(req, res) {
   try {
     const provider = (process.env.DENDRON_PROVIDER || 'openai').toLowerCase();
     const model = process.env.DENDRON_MODEL || 'gpt-5.4-mini';
+    const asyncMode = req.body.async === true || req.body.returnJobId === true; // Client can request async
     let apiKey = process.env.DENDRON_API_KEY || '';
     
-    // Use random Gemini key for demo mode
     if (provider === 'gemini' && getAllGeminiKeys().length > 0) {
       apiKey = getRandomGeminiKey();
     }
     
     const config = PROVIDER_CONFIGS[provider];
-
     if (!config) return res.status(400).json({ error: `Unknown provider: ${provider}` });
 
     const prompt = req.body.prompt || JSON.stringify(req.body);
 
+    // ASYNC MODE: Return job ID immediately, process in background
+    if (asyncMode) {
+      const jobId = generateJobId();
+      cacheJob(jobId, { status: 'queued' });
+      
+      // Process in background (don't await)
+      processInBackground(jobId, provider, model, apiKey, prompt);
+      
+      return res.status(202).json({
+        jobId,
+        statusUrl: `/api/jobs/${jobId}`,
+        message: 'Processing started. Poll statusUrl for results.',
+      });
+    }
+
+    // SYNC MODE: Process and return immediately (original behavior)
     const apiUrl = typeof config.url === 'function' ? config.url(model, process.env.OLLAMA_HOST) : config.url;
     const resp = await fetch(apiUrl, {
       method: 'POST',
