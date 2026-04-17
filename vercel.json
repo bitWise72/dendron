@@ -1,0 +1,13 @@
+{
+  "buildCommand": "echo 'Static site, no build needed'",
+  "outputDirectory": "site",
+  "functions": {
+    "api/dendron.js": {
+      "memory": 128,
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/api/dendron.js" }
+  ]
+}
